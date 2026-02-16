@@ -1,29 +1,31 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
 
-data = {
-    "Price": [250000, 300000, 280000, 450000, 600000, 320000, 700000, 800000, 270000, 1200000],
-    "SquareFootage": [700, 850, 800, 1200, 1600, 900, 1800, 2000, 780, 3000],
-    "Bedrooms": [1, 2, 2, 3, 4, 2, 4, 5, 2, 6],
-    "Bathrooms": [1, 2, 1, 2, 3, 2, 3, 4, 2, 5]
-}
-
-df = pd.DataFrame(data)
+df = pd.read_csv("pattern_finder.csv")
 corr_matrix = df.corr()
 
-plt.figure()
-sns.heatmap(corr_matrix, annot=True, cmap="coolwarm")
-plt.title("Correlation Matrix Heatmap")
-plt.show()
-print("Highly correlated feature pairs (correlation > 0.8):")
-for col in corr_matrix.columns:
-    for row in corr_matrix.index:
-        if col != row and corr_matrix.loc[row, col] > 0.8:
-            print(f"{row} and {col}: {corr_matrix.loc[row, col]:.2f}")
+print("Correlation Matrix:")
+print(corr_matrix)
 
 plt.figure()
-sns.boxplot(y=df["Price"])
-plt.title("Boxplot of Housing Prices")
+plt.imshow(corr_matrix, cmap="coolwarm")
+plt.colorbar()
+plt.xticks(range(len(corr_matrix.columns)), corr_matrix.columns, rotation=45)
+plt.yticks(range(len(corr_matrix.columns)), corr_matrix.columns)
+plt.title("Correlation Heatmap")
+plt.show()
+
+print("\nHighly Correlated Feature Pairs (Correlation > 0.8):")
+
+for i in range(len(corr_matrix.columns)):
+    for j in range(i):
+        if abs(corr_matrix.iloc[i, j]) > 0.8:
+            print(corr_matrix.columns[i], "and", corr_matrix.columns[j],
+                  "->", corr_matrix.iloc[i, j])
+
+plt.figure()
+plt.boxplot(df["Price"])
+plt.title("Boxplot of Price (Outlier Detection)")
 plt.ylabel("Price")
 plt.show()
